@@ -1,4 +1,4 @@
-const oracledb = require("oracledb")
+const oracledb = require("oracledb");
 
 class DB {
 	constructor() {
@@ -41,7 +41,7 @@ class DB {
 
 		let result = await this.connection.execute(
 			`SELECT *
-            FROM ingredient`
+			FROM ingredient`
 		);
 
 		await this.close();
@@ -50,20 +50,18 @@ class DB {
 	}
 
 	async query(statement, params) {
-		try {
+		// try {
 			await this.open();
-			let result;
-			if (params) {
-				result = await this.connection.execute(statement, params);
-			} else {
-				result = await this.connection.execute(statement);
-			}
-
+			const result = await this.connection.execute(
+				statement,
+				params || [],
+				{ outFormat: oracledb.OBJECT }
+			);
 			return result.rows;
-		} catch (error) {
-			console.error('DB.Query: ', error);
-			return null;
-		}
+		// } catch (error) {
+		// 	console.error('DB.Query: ', error);
+		// 	return null;
+		// }
 	}
 }
 
