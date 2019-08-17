@@ -50,18 +50,22 @@ class DB {
 	}
 
 	async query(statement, params) {
-		// try {
-			await this.open();
-			const result = await this.connection.execute(
-				statement,
-				params || [],
-				{ outFormat: oracledb.OBJECT }
-			);
-			return result.rows;
-		// } catch (error) {
-		// 	console.error('DB.Query: ', error);
-		// 	return null;
-		// }
+		let stmt;
+
+		await this.open();
+
+		if (typeof statement === 'object' && typeof statement.generate === 'function') {
+			stmt = statement.generate();
+		} else {
+			stmt = statement;
+		}
+
+		const result = await this.connection.execute(
+			stmt,
+			params || [],
+			{ outFormat: oracledb.OBJECT }
+		);
+		return result.rows;
 	}
 }
 
