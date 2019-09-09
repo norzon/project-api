@@ -65,7 +65,12 @@ class DB {
 			params || [],
 			{ outFormat: oracledb.OBJECT }
 		);
-		return result.rows;
+		const keys = Object.keys(result.rows[0] instanceof Object && result.rows[0] ? result.rows[0] : {});
+		if (keys.length === 1) {
+			return result.rows.map(row => row[keys[0]]);
+		} else {
+			return result.rows;
+		}
 	}
 }
 

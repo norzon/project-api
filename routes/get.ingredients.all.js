@@ -24,7 +24,7 @@ router.get('/ingredients', require('../helpers/routeWrapper')(async (req) => {
 			FROM DECISION
 			INNER JOIN ARTICLE ON ARTICLE.ID = DECISION.ARTICLE_ID
 			INNER JOIN REGULATION ON REGULATION.ID = DECISION.REGULATION_ID
-			WHERE DECISION.INGREDIENT_ID = '${ingredients[i].id}'`
+			WHERE DECISION.INGREDIENT_ID = '${ingredients[i].ID}'`
 		);
 
 		for (let j = 0; j < decisions.length; j++) {

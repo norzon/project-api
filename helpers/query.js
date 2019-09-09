@@ -4,8 +4,13 @@ module.exports = function Query() {
 	table = '',
 	joins = [],
 	where = '',
+	group = '',
+	having = '',
+	order = '',
+	limit = '',
+	offset = '',
 	indent = 0,
-	template = `SELECT\n\t{cols}\nFROM\n\t{table}\n{joins}\n{where}`
+	template = `SELECT\n\t{cols}\nFROM\n\t{table}\n{joins}\n{where}\n{group}\n{having}\n{order}\n{limit}\n{offset}`
 
 	return {
 		select(cols) {
@@ -54,6 +59,28 @@ module.exports = function Query() {
 			}
 			return this;
 		},
+		groupBy(col) {
+			group = `GROUP BY\n\t` + col;
+			return this;
+		},
+		having(conditions) {
+			if (typeof conditions === 'string') {
+				having = conditions
+			} else if (conditions instanceof Array) {
+				having = '\t' + conditions.join('\n\t');
+			}
+			return this;
+		},
+		orderBy(col) {
+			order = `ORDER BY ${col}`;
+			return this;
+		},
+		limit(n) {
+			limit = `LIMIT ${n}`;
+		},
+		offset(n) {
+			offset = `OFFSET ${n}`;
+		},
 		indent(n) {
 			indent = n;
 			return this;
@@ -66,9 +93,15 @@ module.exports = function Query() {
 			.replace('{table}', table)
 			.replace('{joins}', joins.join('\n'))
 			.replace('{where}', where ? `WHERE\n\t${where}` : '')
+			.replace('{group}', group)
+			.replace('{having}', having ? `HAVING\n\t${having}` : '')
+			.replace('{order}', order)
+			.replace('{limit}', limit)
+			.replace('{offset}', offset)
 
 			generated = generated
 			.trim()
+			.replace(/\n{2,}/g, '\n')
 			.split(/\n/g)
 			.map(line => '\t'.repeat(indent) + line)
 			.join('\n')

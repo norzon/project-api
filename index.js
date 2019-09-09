@@ -5,9 +5,11 @@ const DB = require("./db");
 const db = new DB();
 const watch = require('./helpers/stopwatch');
 
-
 app.set('db', db);
 app.set('watch', watch);
+
+app.use(express.json()) // for parsing application/json
+app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 // Initial controller
 app.use((req, res, next) => {
@@ -25,6 +27,7 @@ app.get('/', async (req, res, next) => {
 // Routes
 app.use(require('./routes/get.ingredients.all'));
 app.use(require('./routes/get.decisions.all'));
+app.use(require('./routes/post.admin.authenticate'));
 
 // Final controller. Run after the routers
 app.use((req, res, next) => {
@@ -44,10 +47,10 @@ app.use((req, res, next) => {
 });
 
 db.tryStatement()
-	.then((results) => {
-		console.log("API running on port: 8000");
-		app.listen(8000);
-	})
-	.catch(e => {
-		console.error(e);
-	});
+.then((results) => {
+	console.log("API running on port: 8000");
+	app.listen(8000);
+})
+.catch(e => {
+	console.error(e);
+});
