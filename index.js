@@ -4,10 +4,17 @@ const express = require("express"),
 const DB = require("./db");
 const db = new DB();
 const watch = require('./helpers/stopwatch');
+const hashUser = require('./helpers/hashUser');
+const cors = require('cors');
+
+app.set('admins', [
+	'admin:admin'
+].map(hashUser));
 
 app.set('db', db);
 app.set('watch', watch);
 
+app.use(cors());
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
@@ -15,7 +22,6 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 app.use((req, res, next) => {
 	watch.start();
 	res.contentType('application/json');
-	res.header('Access-Control-Allow-Origin', '*');
 	next();
 });
 

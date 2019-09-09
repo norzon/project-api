@@ -1,16 +1,20 @@
-const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
-
-const hashUser = (str) => crypto.createHash('sha1').update(str).digest('hex');
-
-const admins = [
-	'admin:admin'
-].map(hashUser);
-
+const hashUser = require('../helpers/hashUser');
 
 router.post('/admin/authenticate', require('../helpers/routeWrapper')(async (req) => {
-	return req.body || 'no body';
-}))
+	if (!req.body.email || !req.body.password) {
+		throw new Error('Email or password not given');
+	}
+
+	const user = `${req.body.email}:${req.body.password}`;
+	const hash = hashUser(user);
+
+	if (req.app.get('admins').includes(hash)) {
+		return hash;
+	} else {
+		throw new Error('Invalid email or password');
+	}
+}));
 
 module.exports = router;
